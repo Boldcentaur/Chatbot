@@ -76,84 +76,39 @@ Or You can use [servo](http://serveo.net/) to expose local servers to the intern
 ## Usage
 The initial state is set to `user`.
 
-Every time `user` state is triggered to `advance` to another state, it will `go_back` to `user` state after the bot replies corresponding message.
-
-* user
-	* Input: "go to state1"
-		* Reply: "I'm entering state1"
-
-	* Input: "go to state2"
-		* Reply: "I'm entering state2"
-
-## Deploy
-Setting to deploy webhooks on Heroku.
-
-### Heroku CLI installation
-
-* [macOS, Windows](https://devcenter.heroku.com/articles/heroku-cli)
-
-or you can use Homebrew (MAC)
-```sh
-brew tap heroku/brew && brew install heroku
-```
-
-or you can use Snap (Ubuntu 16+)
-```sh
-sudo snap install --classic heroku
-```
-
-### Connect to Heroku
-
-1. Register Heroku: https://signup.heroku.com
-
-2. Create Heroku project from website
-
-3. CLI Login
-
-	`heroku login`
-
-### Upload project to Heroku
-
-1. Add local project to Heroku project
-
-	heroku git:remote -a {HEROKU_APP_NAME}
-
-2. Upload project
-
-	```
-	git add .
-	git commit -m "Add code"
-	git push -f heroku master
-	```
-
-3. Set Environment - Line Messaging API Secret Keys
-
-	```
-	heroku config:set LINE_CHANNEL_SECRET=your_line_channel_secret
-	heroku config:set LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
-	```
-
-4. Your Project is now running on Heroku!
-
-	url: `{HEROKU_APP_NAME}.herokuapp.com/callback`
-
-	debug command: `heroku logs --tail --app {HEROKU_APP_NAME}`
-
-5. If fail with `pygraphviz` install errors
-
-	run commands below can solve the problems
-	```
-	heroku buildpacks:set heroku/python
-	heroku buildpacks:add --index 1 heroku-community/apt
-	```
-
-	refference: https://hackmd.io/@ccw/B1Xw7E8kN?type=view#Q2-如何在-Heroku-使用-pygraphviz
-
-## Reference
-[Pipenv](https://medium.com/@chihsuan/pipenv-更簡單-更快速的-python-套件管理工具-135a47e504f4) ❤️ [@chihsuan](https://github.com/chihsuan)
-
-[TOC-Project-2019](https://github.com/winonecheng/TOC-Project-2019) ❤️ [@winonecheng](https://github.com/winonecheng)
-
-Flask Architecture ❤️ [@Sirius207](https://github.com/Sirius207)
-
-[Line line-bot-sdk-python](https://github.com/line/line-bot-sdk-python/tree/master/examples/flask-echo)
+* State: user
+	* Input: "start"
+		* State: choose
+		* Reply: "你爲什麽要退選呢？"
+		* Reply: 1.期中考考太爛 2.作業太難寫了 3.分組報告完全不會做
+		 	* Input: 選擇"期中考考太爛"
+				* State: exam
+				* Reply: "其他人考得怎麽樣呢？"
+				* Reply: 1.大家都一樣爛 2.只有我這麽爛
+					* Input: 選擇"大家都一樣爛"
+						* State: teacher
+						* Reply: "該科教授看起來友善嗎？"
+						* Reply: 1.超和藹可親的 2.看起來就是大刀教授
+			* Input: 選擇"作業太難寫了"
+				* State: homework
+				* Reply: "可不可以‘參考’別人的作業呢？"
+				* Reply: 1.作業可以偷偷抄 2.助教抓抄襲超嚴格的
+					* Input: 選擇"作業可以偷偷抄"
+						* State: friend
+						* Reply: "有沒有認識系上卷哥卷姐？"
+						* Reply: 1.有 2.沒有我超邊緣
+							* Input: 選擇"沒有我超邊緣"
+								* State: friend_find
+								* Reply: 如何交朋友教程
+								* Reply: 看完教程後，有信心和卷哥卷姐成爲朋友嗎嗎？
+								* Reply: 1.現在全系都是我朋友 2.不行我辦不到
+			* Input: 選擇"分組報告完全不會做"
+				* State: project
+				* Reply: "其他隊員怎麽樣呢"
+				* Reply: 1.全部和我一樣廢 2.隊内有超神卷哥卷姐
+					* Input: 選擇 全部和我一樣廢 不行我辦不到 助教抓抄襲超嚴格的 只有我這麽爛 看起來就是大刀教授
+						* State: drop
+						* Reply: "快退吧！你沒救了！"
+					* Input: 選擇 隊内有超神卷哥卷姐 有 現在全系都是我朋友 超和藹可親的
+						* State: keep
+						* Reply: "別退！教授和同學會拯救你的！"
